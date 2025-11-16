@@ -416,6 +416,8 @@ phase5_version_managers() {
     # Activate mise for current session
     export PATH="$HOME/.local/bin:$PATH"
     if command_exists mise; then
+        # Ensure PROMPT_COMMAND is defined (required by mise activate with set -u)
+        export PROMPT_COMMAND="${PROMPT_COMMAND:-}"
         eval "$(mise activate bash)"
     fi
 
