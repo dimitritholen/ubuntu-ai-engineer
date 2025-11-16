@@ -79,6 +79,13 @@ fi
 # Track installation errors
 declare -a INSTALL_ERRORS=()
 
+# Detect if running interactively (not via curl | bash)
+if [ -t 0 ]; then
+    INTERACTIVE=true
+else
+    INTERACTIVE=false
+fi
+
 ################################################################################
 # Utility Functions
 ################################################################################
@@ -155,10 +162,14 @@ preflight_checks() {
     if ! grep -q "Ubuntu" /etc/os-release; then
         log_error "This script is designed for Ubuntu 25.04"
         log_warning "Current OS: $(grep PRETTY_NAME /etc/os-release | cut -d= -f2 | tr -d '\"')"
-        read -p "Continue anyway? (y/N) " -n 1 -r
-        echo
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
+        if [ "$INTERACTIVE" = true ]; then
+            read -p "Continue anyway? (y/N) " -n 1 -r
+            echo
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                exit 1
+            fi
+        else
+            log_warning "Running in non-interactive mode, continuing anyway..."
         fi
     fi
 
@@ -1242,8 +1253,12 @@ main() {
     log_info "This script will install a comprehensive AI engineering development environment"
     log_info "Installation log: $LOGFILE"
 
-    echo ""
-    read -p "Press Enter to begin installation or Ctrl+C to cancel..."
+    if [ "$INTERACTIVE" = true ]; then
+        echo ""
+        read -p "Press Enter to begin installation or Ctrl+C to cancel..."
+    else
+        log_info "Running in non-interactive mode, starting installation..."
+    fi
 
     preflight_checks
     phase1_system_foundation
