@@ -76,12 +76,21 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
     export PATH="$BIN_DIR:$PATH"
 fi
 
+# Track installation errors
+declare -a INSTALL_ERRORS=()
+
 ################################################################################
 # Utility Functions
 ################################################################################
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+record_error() {
+    local error_msg="$1"
+    INSTALL_ERRORS+=("$error_msg")
+    log_error "$error_msg"
 }
 
 add_to_path() {
@@ -880,6 +889,39 @@ phase10_ai_tools() {
     else
         log_warning "AIChat already installed"
     fi
+
+    # Install Aider CLI
+    log_section "Installing Aider CLI (AI pair programming)"
+    if ! command_exists aider; then
+        log_cmd "curl -LsSL https://aider.chat/install.sh | sh"
+        if curl -LsSL https://aider.chat/install.sh | sh 2>&1 | tee -a "$LOGFILE"; then
+            log_success "Aider CLI installed"
+            log_info "Run 'aider' to start AI pair programming"
+        else
+            record_error "Aider CLI installation failed"
+        fi
+    else
+        log_warning "Aider CLI already installed"
+    fi
+
+    # Install Droid CLI (Factory AI)
+    log_section "Installing Droid CLI (Factory AI)"
+    if ! command_exists droid; then
+        log_cmd "curl -fsSL https://app.factory.ai/cli | sh"
+        # Install xdg-utils if not present (required for Droid)
+        if ! command_exists xdg-open; then
+            log_info "Installing xdg-utils (required for Droid)"
+            sudo apt-get install -y xdg-utils 2>&1 | tee -a "$LOGFILE" || true
+        fi
+        if curl -fsSL https://app.factory.ai/cli | sh 2>&1 | tee -a "$LOGFILE"; then
+            log_success "Droid CLI installed"
+            log_info "Run 'droid' to start your development session"
+        else
+            record_error "Droid CLI installation failed"
+        fi
+    else
+        log_warning "Droid CLI already installed"
+    fi
 }
 
 ################################################################################
@@ -1112,6 +1154,8 @@ phase15_summary() {
     echo "  • GitHub Copilot CLI"
     echo "  • OpenCode CLI"
     echo "  • OpenAI Codex CLI"
+    echo "  • Aider CLI (AI pair programming)"
+    echo "  • Droid CLI (Factory AI)"
     echo "  • Goose CLI (Block/Square)"
     echo "  • AIChat (multi-provider)"
 
@@ -1170,10 +1214,23 @@ phase15_summary() {
     echo "  • Use 'z <directory>' instead of 'cd' (zoxide smart jumping)"
     echo "  • Run 'glow README.md' to render markdown in terminal"
 
+    # Display installation errors if any
+    if [ ${#INSTALL_ERRORS[@]} -gt 0 ]; then
+        echo -e "\n${YELLOW}⚠️  Installation Errors:${NC}\n"
+        for error in "${INSTALL_ERRORS[@]}"; do
+            echo -e "${RED}  ✗${NC} $error"
+        done
+        echo -e "\n${YELLOW}Note:${NC} Some tools failed to install. Check the log file for details."
+    fi
+
     echo -e "\n${BOLD}Installation log saved to:${NC} $LOGFILE"
     echo ""
 
-    log_success "Setup complete! Enjoy your new development environment! 🚀"
+    if [ ${#INSTALL_ERRORS[@]} -eq 0 ]; then
+        log_success "Setup complete! Enjoy your new development environment! 🚀"
+    else
+        echo -e "${YELLOW}⚠️${NC}  Setup completed with some errors. Review the errors above."
+    fi
 }
 
 ################################################################################

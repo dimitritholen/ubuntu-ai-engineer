@@ -73,6 +73,8 @@ curl -fsSL https://raw.githubusercontent.com/dimitritholen/ubuntu-ai-engineer/ma
 - **[GitHub Copilot CLI](https://docs.github.com/en/copilot/github-copilot-in-the-cli)** - AI-powered command-line assistant from GitHub
 - **[OpenCode CLI](https://opencode.ai/)** - Open-source AI coding agent for terminal
 - **[OpenAI Codex CLI](https://www.npmjs.com/package/@openai/codex)** - OpenAI's Codex coding assistant CLI
+- **[Aider](https://aider.chat/)** - AI pair programming in your terminal
+- **[Droid CLI](https://factory.ai/product/cli)** - Factory AI's development assistant
 - **[Goose CLI](https://github.com/block/goose)** - Block/Square's AI developer agent
 - **[AIChat](https://github.com/sigoden/aichat)** - Multi-provider AI chat CLI
 
