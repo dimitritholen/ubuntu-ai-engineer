@@ -789,6 +789,70 @@ phase10_ai_tools() {
         log_warning "Claude CLI already installed"
     fi
 
+    # Install Google Gemini CLI
+    log_section "Installing Google Gemini CLI"
+    if ! command_exists gemini; then
+        if command_exists npm; then
+            log_cmd "npm install -g @google/gemini-cli@latest"
+            npm install -g @google/gemini-cli@latest 2>&1 | tee -a "$LOGFILE"
+            log_success "Google Gemini CLI installed via npm"
+            log_info "Run 'gemini' to authenticate with your Google account"
+        else
+            log_warning "npm not available, skipping Gemini CLI"
+            log_info "Install Node.js first, then: npm install -g @google/gemini-cli@latest"
+        fi
+    else
+        log_warning "Gemini CLI already installed"
+    fi
+
+    # Install GitHub Copilot CLI
+    log_section "Installing GitHub Copilot CLI"
+    if ! command_exists copilot; then
+        if command_exists npm; then
+            log_cmd "npm install -g @github/copilot@latest"
+            npm install -g @github/copilot@latest 2>&1 | tee -a "$LOGFILE"
+            log_success "GitHub Copilot CLI installed via npm"
+            log_info "Run 'copilot' and use /login to authenticate with GitHub"
+        else
+            log_warning "npm not available, skipping GitHub Copilot CLI"
+            log_info "Install Node.js first, then: npm install -g @github/copilot@latest"
+        fi
+    else
+        log_warning "GitHub Copilot CLI already installed"
+    fi
+
+    # Install OpenCode CLI
+    log_section "Installing OpenCode CLI"
+    if ! command_exists opencode; then
+        if command_exists npm; then
+            log_cmd "npm install -g opencode-ai@latest"
+            npm install -g opencode-ai@latest 2>&1 | tee -a "$LOGFILE"
+            log_success "OpenCode CLI installed via npm"
+            log_info "Run 'opencode auth login' to authenticate"
+        else
+            log_warning "npm not available, skipping OpenCode CLI"
+            log_info "Install Node.js first, then: npm install -g opencode-ai@latest"
+        fi
+    else
+        log_warning "OpenCode CLI already installed"
+    fi
+
+    # Install OpenAI Codex CLI
+    log_section "Installing OpenAI Codex CLI"
+    if ! command_exists codex; then
+        if command_exists npm; then
+            log_cmd "npm install -g @openai/codex@latest"
+            npm install -g @openai/codex@latest 2>&1 | tee -a "$LOGFILE"
+            log_success "OpenAI Codex CLI installed via npm"
+            log_info "Run 'codex' to authenticate with your ChatGPT account"
+        else
+            log_warning "npm not available, skipping OpenAI Codex CLI"
+            log_info "Install Node.js first, then: npm install -g @openai/codex@latest"
+        fi
+    else
+        log_warning "Codex CLI already installed"
+    fi
+
     # Install Goose CLI
     log_section "Installing Goose CLI (Block/Square)"
     if ! command_exists goose; then
@@ -1044,6 +1108,10 @@ phase15_summary() {
 
     echo -e "\n${GREEN}✓ AI CLI Tools:${NC}"
     echo "  • Claude CLI (Anthropic)"
+    echo "  • Google Gemini CLI"
+    echo "  • GitHub Copilot CLI"
+    echo "  • OpenCode CLI"
+    echo "  • OpenAI Codex CLI"
     echo "  • Goose CLI (Block/Square)"
     echo "  • AIChat (multi-provider)"
 
